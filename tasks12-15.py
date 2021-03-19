@@ -46,7 +46,7 @@ def draw_polygons(image):
         triangle = []
         for point in polygon:
             x, y, z = parser.vertex_list[point - 1]
-            triangle.append((20000 * x + 2000, 20000 * y + 2000, 20000 * z + 2000))
+            triangle.append((28000 * x + 2500, 28000 * y + 1500, 20000 * z + 2000))
         n = count_norm(triangle)
         cos = get_cos(n)
         if cos < 0:

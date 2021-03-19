@@ -38,7 +38,7 @@ def draw_polygons(image):
         triangle = []
         for point in polygon:
             x, y = parser.vertex_list[point - 1]
-            triangle.append((20000 * x + 2000, 20000 * y + 2000))
+            triangle.append((28000 * x + 2500, 28000 * y + 1500))
         print(triangle)
         draw_triangles(triangle[0][0], triangle[0][1], triangle[1][0], triangle[1][1], triangle[2][0], triangle[2][1], image, (np.random.randint(256),np.random.randint(256),np.random.randint(256)), size)
     image.save("images/PozhiloyRabbitPolygonsTriangles.jpg", "JPEG")
