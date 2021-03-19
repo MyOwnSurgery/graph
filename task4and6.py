@@ -2,8 +2,9 @@ class Parser:
     def __init__(self):
         self.vertex_list = []
         self.polygon_list = []
+        self.vertex_list_z = []
 
-    def load_vertex(self, fileName):
+    def load_vertex(self, fileName,z):
         objFile = open(fileName)
         for line in objFile:
             split = line.split()
@@ -12,9 +13,13 @@ class Parser:
                 continue
             if split[0] == "v":
                 tmp = [float(i) for i in split[1:]]
-                cord = (tmp[0],tmp[1])
+                if z == True:
+                 cord = (tmp[0],tmp[1],tmp[2])
+                else:
+                 cord = (tmp[0], tmp[1])
                 self.vertex_list.append(cord)
         objFile.close()
+
 
     def load_polygons(self, fileName):
         objFile = open(fileName)
@@ -28,6 +33,8 @@ class Parser:
                 self.polygon_list.append(polygons)
 
         objFile.close()
+
+
 
 
 

@@ -7,7 +7,7 @@ from task3 import line
 img = Image.new("RGB", (1000,1000))
 draw = ImageDraw.Draw(img)
 parser = Parser()
-parser.load_vertex("Test_rabbit.txt")
+parser.load_vertex("Test_rabbit.txt", False)
 point_list = []
 
 for pair in parser.vertex_list:
