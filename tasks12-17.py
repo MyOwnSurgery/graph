@@ -44,13 +44,18 @@ def draw_polygons(image):
     z_buf = Z_buf()
     for polygon in parser.polygon_list:
         triangle = []
+        triangle_proj = []
         for point in polygon:
             x, y, z = parser.vertex_list[point - 1]
-            triangle.append((28000 * x + 2500, 28000 * y + 1500, 20000 * z + 2000))
+            t_coord = turn_coord(x, y, z)
+            x, y, z = t_coord[0],t_coord[1],t_coord[2]
+            coord = proj_coord(x,y,z)
+            triangle.append((x, y, z))
+            triangle_proj.append((coord[0],coord[1],1))
         n = count_norm(triangle)
         cos = get_cos(n)
         if cos < 0:
-         draw_triangles(triangle[0][0], triangle[0][1], triangle[0][2], triangle[1][0], triangle[1][1], triangle[1][2], triangle[2][0], triangle[2][1], triangle[2][2], image, (-int(255 * cos),-int(255 * cos),-int(255 * cos)), size, z_buf)
+         draw_triangles(triangle_proj[0][0], triangle_proj[0][1], triangle_proj[0][2], triangle_proj[1][0], triangle_proj[1][1], triangle_proj[1][2], triangle_proj[2][0], triangle_proj[2][1], triangle_proj[2][2], image, (-int(255 * cos),-int(255 * cos),-int(255 * cos)), size, z_buf)
         else:
             continue
     image.save("images/PozhiloyRabbitPolygonsTrianglesLight.jpg", "JPEG")
@@ -59,13 +64,38 @@ def count_norm(triangle):
     return np.cross([triangle[1][0] - triangle[0][0], triangle[1][1] - triangle[0][1], triangle[1][2] - triangle[0][2]], [triangle[1][0] - triangle[2][0], triangle[1][1] - triangle[2][1], triangle[1][2] - triangle[2][2]])
 
 def get_cos(n):
-    return np.dot(n,[0, 0, 1])/(LA.norm(n)*LA.norm([0, 0, 1]))
+    return np.dot(n,[0, 0, -1])/(LA.norm(n)*LA.norm([0, 0, -1]))
 
+def proj_coord(x,y,z):
+    init_vec = np.array([[x], [y], [z]])
+    ax = 20000
+    ay = 20000
+    u0 = 150
+    v0 = 150
+    t_vec = np.array([[0.005], [-0.045], [15]])
+    matrix =  np.array([[ax,0,u0], [0,ay,v0], [0,0,1]])
+    final_vec = matrix.dot(init_vec+t_vec)
+    return final_vec[0][0],final_vec[1][0]
+
+def turn_coord(x,y,z):
+    init_vec = np.array([[x], [y], [z]])
+    alpha = 0
+    beta = 1.57
+    gamma = 0
+    R_1 = np.array([[1,0,0], [0,np.cos(alpha),np.sin(alpha)], [0,-np.sin(alpha),np.cos(alpha)]])
+    R_2 = np.array([[np.cos(beta),0,np.sin(beta)], [0,1,0], [-np.sin(beta),0,np.cos(beta)]])
+    R_3 = np.array([[np.cos(gamma), np.sin(gamma), 0], [-np.sin(gamma), np.cos(gamma), 0], [0, 0, 1]])
+    final_vec = ((R_1.dot(R_2)).dot(R_3)).dot(init_vec)
+    return final_vec[0][0],final_vec[1][0], final_vec[2][0]
 
 
 size = 5000
 image = Image.new('RGB', (size, size))
 draw_polygons(image)
+
+
+
+
 
 
 
