@@ -18,7 +18,7 @@ def bar_coord(x0, y0, x1, y1, x2, y2, x, y):
     return lambda0, lambda1, lambda2
 
 
-def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, color, size, z_buf):
+def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, color, size, z_buf, norms):
     draw = ImageDraw.Draw(image)
     xmin = math.floor(np.min([x0, x1, x2]))
     ymin = math.floor(np.min([y0, y1, y2]))
@@ -28,13 +28,18 @@ def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, color, size, z_buf
         xmin = 0
     if (ymin < 0):
         ymin = 0
+    l0 = np.dot(norms[0], [0, 0, 1]) / (LA.norm(norms[0]) * LA.norm([0, 0, 1]))
+    l1 = np.dot(norms[1], [0, 0, 1]) / (LA.norm(norms[1]) * LA.norm([0, 0, 1]))
+    l2 = np.dot(norms[1], [0, 0, 1]) / (LA.norm(norms[2]) * LA.norm([0, 0, 1]))
     for x in range(xmin, xmax):
         for y in range(ymin, ymax):
             lambda0, lambda1, lambda2 = bar_coord(x0, y0, x1, y1, x2, y2, x, y)
             if lambda0 > 0 and lambda1 > 0 and lambda2 > 0:
                 z_tilda = lambda0 * z0 + lambda1 * z1 + lambda2 * z2
                 if z_tilda < z_buf.buffer[x][y]:
-                    draw.point((x, size - y), color)
+                    brightness = int(255*(lambda0*l0+lambda1*l1+lambda2*l2))
+                    print(brightness)
+                    draw.point((x, size - y), (brightness,brightness,brightness))
                     z_buf.buffer[x][y] = z_tilda
 
 
@@ -42,8 +47,10 @@ def draw_polygons(image):
     parser = Parser()
     parser.load_vertex("Test_rabbit.txt", True)
     parser.load_polygons("Test_rabbit.txt")
+    parser.load_norms("Test_rabbit.txt")
+    parser.load_normal_indexes("Test_rabbit.txt")
     z_buf = Z_buf()
-    for polygon in parser.polygon_list:
+    for polygon, indexes in zip(parser.polygon_list, parser.index_list):
         triangle = []
         triangle_proj = []
         for point in polygon:
@@ -52,16 +59,16 @@ def draw_polygons(image):
             x, y, z = t_coord[0], t_coord[1], t_coord[2]
             t_coord = move_coord(x, y, z)
             x, y, z = t_coord[0], t_coord[1], t_coord[2]
-
             coord = proj_coord(x, y, z)
             triangle.append((x, y, z))
             triangle_proj.append((coord[0], coord[1], 1.0))
+        norms = (parser.norm_list[indexes[0]-1],parser.norm_list[indexes[1]-1],parser.norm_list[indexes[2]-1])
         n = count_norm(triangle)
         cos = get_cos(n)
         if cos < 0:
             draw_triangles(triangle_proj[0][0], triangle_proj[0][1], triangle[0][2], triangle_proj[1][0],
                            triangle_proj[1][1], triangle[1][2], triangle_proj[2][0], triangle_proj[2][1],
-                           triangle[2][2], image, (-int(255 * cos), -int(255 * cos), -int(255 * cos)), size, z_buf)
+                           triangle[2][2], image, (-int(255 * cos), -int(255 * cos), -int(255 * cos)), size, z_buf, norms)
         else:
             continue
     image.save("images/PozhiloyRabbitPolygonsTrianglesLight.jpg", "JPEG")
