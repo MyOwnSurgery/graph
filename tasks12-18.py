@@ -39,7 +39,6 @@ def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, size, z_buf, norms
                 z_tilda = lambda0 * z0 + lambda1 * z1 + lambda2 * z2
                 if z_tilda < z_buf.buffer[x][y]:
                     brightness = int(255*(lambda0*l0+lambda1*l1+lambda2*l2))
-                    print(brightness)
                     draw.point((x, size - y), (brightness,brightness,brightness))
                     z_buf.buffer[x][y] = z_tilda
 
