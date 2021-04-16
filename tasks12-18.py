@@ -18,7 +18,7 @@ def bar_coord(x0, y0, x1, y1, x2, y2, x, y):
     return lambda0, lambda1, lambda2
 
 
-def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, color, size, z_buf, norms):
+def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, size, z_buf, norms):
     draw = ImageDraw.Draw(image)
     xmin = math.floor(np.min([x0, x1, x2]))
     ymin = math.floor(np.min([y0, y1, y2]))
@@ -28,9 +28,10 @@ def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, color, size, z_buf
         xmin = 0
     if (ymin < 0):
         ymin = 0
-    l0 = np.dot(norms[0], [0, 0, 1]) / (LA.norm(norms[0]) * LA.norm([0, 0, 1]))
-    l1 = np.dot(norms[1], [0, 0, 1]) / (LA.norm(norms[1]) * LA.norm([0, 0, 1]))
-    l2 = np.dot(norms[1], [0, 0, 1]) / (LA.norm(norms[2]) * LA.norm([0, 0, 1]))
+    l = [0, 0, 1]
+    l0 = np.dot(norms[0], l) / (LA.norm(norms[0]) * LA.norm(l))
+    l1 = np.dot(norms[1], l) / (LA.norm(norms[1]) * LA.norm(l))
+    l2 = np.dot(norms[1], l) / (LA.norm(norms[2]) * LA.norm(l))
     for x in range(xmin, xmax):
         for y in range(ymin, ymax):
             lambda0, lambda1, lambda2 = bar_coord(x0, y0, x1, y1, x2, y2, x, y)
@@ -68,7 +69,7 @@ def draw_polygons(image):
         if cos < 0:
             draw_triangles(triangle_proj[0][0], triangle_proj[0][1], triangle[0][2], triangle_proj[1][0],
                            triangle_proj[1][1], triangle[1][2], triangle_proj[2][0], triangle_proj[2][1],
-                           triangle[2][2], image, (-int(255 * cos), -int(255 * cos), -int(255 * cos)), size, z_buf, norms)
+                           triangle[2][2], image, size, z_buf, norms)
         else:
             continue
     image.save("images/PozhiloyRabbitPolygonsTrianglesLight.jpg", "JPEG")
