@@ -31,7 +31,7 @@ def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, size, z_buf, norms
     l = [0, 0, 1]
     l0 = np.dot(norms[0], l) / (LA.norm(norms[0]) * LA.norm(l))
     l1 = np.dot(norms[1], l) / (LA.norm(norms[1]) * LA.norm(l))
-    l2 = np.dot(norms[1], l) / (LA.norm(norms[2]) * LA.norm(l))
+    l2 = np.dot(norms[2], l) / (LA.norm(norms[2]) * LA.norm(l))
     for x in range(xmin, xmax):
         for y in range(ymin, ymax):
             lambda0, lambda1, lambda2 = bar_coord(x0, y0, x1, y1, x2, y2, x, y)
