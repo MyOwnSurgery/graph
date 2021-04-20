@@ -29,6 +29,7 @@ def draw_triangles(x0, y0, z0, x1, y1, z1, x2, y2, z2, image, size, z_buf, norms
     if (ymin < 0):
         ymin = 0
     l = [0, 0, 1]
+    print(norms)
     l0 = np.dot(norms[0], l) / (LA.norm(norms[0]) * LA.norm(l))
     l1 = np.dot(norms[1], l) / (LA.norm(norms[1]) * LA.norm(l))
     l2 = np.dot(norms[2], l) / (LA.norm(norms[2]) * LA.norm(l))
@@ -63,6 +64,13 @@ def draw_polygons(image):
             triangle.append((x, y, z))
             triangle_proj.append((coord[0], coord[1], 1.0))
         norms = (parser.norm_list[indexes[0]-1],parser.norm_list[indexes[1]-1],parser.norm_list[indexes[2]-1])
+        norm1, norm2, norm3 = turn_norms(parser.norm_list[indexes[0] - 1][0], parser.norm_list[indexes[0] - 1][1],
+                                         parser.norm_list[indexes[0] - 1][2])
+        norm4, norm5, norm6 = turn_norms(parser.norm_list[indexes[1] - 1][0], parser.norm_list[indexes[1] - 1][1],
+                                         parser.norm_list[indexes[1] - 1][2])
+        norm7, norm8, norm9 = turn_norms(parser.norm_list[indexes[2] - 1][0], parser.norm_list[indexes[2] - 1][1],
+                                         parser.norm_list[indexes[2] - 1][2])
+        norms = ((norm1, norm2, norm3), (norm4, norm5, norm6), (norm7, norm8, norm9))
         n = count_norm(triangle)
         cos = get_cos(n)
         if cos < 0:
@@ -98,6 +106,17 @@ def turn_coord(x, y, z):
     init_vec = np.array([[x], [y], [z]])
     alpha = 0
     beta = -1.57
+    gamma = 0
+    R_1 = np.array([[1, 0, 0], [0, np.cos(alpha), np.sin(alpha)], [0, -np.sin(alpha), np.cos(alpha)]])
+    R_2 = np.array([[np.cos(beta), 0, np.sin(beta)], [0, 1, 0], [-np.sin(beta), 0, np.cos(beta)]])
+    R_3 = np.array([[np.cos(gamma), np.sin(gamma), 0], [-np.sin(gamma), np.cos(gamma), 0], [0, 0, 1]])
+    final_vec = ((R_1.dot(R_2)).dot(R_3)).dot(init_vec)
+    return final_vec[0][0], final_vec[1][0], final_vec[2][0]
+
+def turn_norms(x, y, z):
+    init_vec = np.array([[x], [y], [z]])
+    alpha = 0
+    beta = 1.57
     gamma = 0
     R_1 = np.array([[1, 0, 0], [0, np.cos(alpha), np.sin(alpha)], [0, -np.sin(alpha), np.cos(alpha)]])
     R_2 = np.array([[np.cos(beta), 0, np.sin(beta)], [0, 1, 0], [-np.sin(beta), 0, np.cos(beta)]])
