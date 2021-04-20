@@ -63,7 +63,6 @@ def draw_polygons(image):
             coord = proj_coord(x, y, z)
             triangle.append((x, y, z))
             triangle_proj.append((coord[0], coord[1], 1.0))
-        norms = (parser.norm_list[indexes[0]-1],parser.norm_list[indexes[1]-1],parser.norm_list[indexes[2]-1])
         norm1, norm2, norm3 = turn_norms(parser.norm_list[indexes[0] - 1][0], parser.norm_list[indexes[0] - 1][1],
                                          parser.norm_list[indexes[0] - 1][2])
         norm4, norm5, norm6 = turn_norms(parser.norm_list[indexes[1] - 1][0], parser.norm_list[indexes[1] - 1][1],
